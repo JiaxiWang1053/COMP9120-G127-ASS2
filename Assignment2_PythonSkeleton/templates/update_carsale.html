@@ -1,0 +1,37 @@
+{% include 'top.html' %}
+
+<div class="content">
+    <div class="container">
+        <h1 class="title" align="center">Update Car Sale</h1>
+
+        <form class="newbooking pure-form pure-form-aligned" method="POST" action="{{url_for('update_carsale')}}">
+			<div class="pure-control-group">
+                <label for="carsale_id">ID:</label>
+                <input type="text" name="carsale_id" value="{{ carsaleInfo.carsale_id }}" size="25" readonly required>
+            </div>
+            <div class="pure-control-group">
+                <label for="make">Make:</label>
+                <input type="text" name="make" value="{{ carsaleInfo.make }}" size="25" readonly required>
+            </div>
+            <div class="pure-control-group">
+                <label for="model">Model:</label>
+                <input type="text" name="model" value="{{ carsaleInfo.model }}" size="25" readonly required>
+            </div>
+            <div class="pure-control-group">
+                <label for="customer">Buyer:</label>
+                <input type="text" name="customer" value="{{ carsaleInfo.customer_name }}" size="25" autofocus>
+            </div>
+			<div class="pure-control-group">
+                <label for="salesperson">Salesperson:</label>
+				<input type="text" name="salesperson" value="{{ carsaleInfo.salesperson_name }}" size="25">
+            </div>
+			<div class="pure-control-group">
+                <label for="sale_date">Sales Date:</label>
+				<input type="date" name="sale_date" value="{{ carsaleInfo.sale_date }}" size=25">
+            </div>
+            <button type="submit" class="flat">Update Car Sale</button>
+        </form>
+    </div>
+</div>
+
+{% include 'bottom.html' %}

@@ -1,0 +1,33 @@
+{% include 'top.html' %}
+
+<div class="content">
+    <div class="container">
+        <h1 class="title" align="center">New Car</h1>
+
+        <form class="newbooking pure-form pure-form-aligned" method="POST" action="{{url_for('new_carsale')}}">
+            <div class="pure-control-group">
+                <label for="make">Make:</label>
+                <input type="text" name="make" size="25" autofocus>
+            </div>
+            <div class="pure-control-group">
+                <label for="model">Model:</label>
+                <input type="text" name="model" size="25">
+            </div>
+            <div class="pure-control-group">
+                <label for="builtyear">Built Year:</label>
+                <input type="text" name="builtyear" size="25">
+            </div>
+            <div class="pure-control-group">
+                <label for="odometer">Odometer:</label>
+                <input type="text" name="odometer" size="25">
+            </div>
+            <div class="pure-control-group">
+                <label for="price">Price:</label>
+                <input type="text" name="price" size="25">
+            </div>
+            <button type="submit" class="flat">Add Car Sale</button>
+        </form>
+    </div>
+</div>
+
+{% include 'bottom.html' %}

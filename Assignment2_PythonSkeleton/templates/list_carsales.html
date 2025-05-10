@@ -1,0 +1,62 @@
+{% include 'top.html' %}
+
+<div class="content">
+    <div class="container">
+        <h1 class="title" align="center">Car Sales</h1>
+        <div class="search">
+            <form class="search-top" method="POST" action="{{url_for('list_carsales')}}">
+                <input type="text" name="search" placeholder="Search" autofocus>
+                <button class="flat" type="submit">Find</button>
+                <div class="clear"></div>
+            </form>
+        </div>
+        <table class="styled">
+            <thead>
+                <tr>
+                    <th>ID</th>
+				    <th>Make</th>
+                    <th>Model</th>
+                    <th>Year</th>
+                    <th>Odometer</th>
+					<th>Price</th>
+                    <th>IsSold</th>
+                    <th>Sale Date</th>
+                    <th>Buyer</th>
+                    <th>Salesperson</th>
+                </tr>
+            </thead>
+            <tbody>
+                    {% for i in carsale_list %}
+                    <tr class='clickable-row' data-href="{{url_for('update_carsale', carsale_id=i.carsale_id, make=i.make, model=i.model, customer=i.buyer, salesperson=i.salesperson, sale_date = i.sale_date)}}" method="GET">
+					    <td>{{ i.carsale_id }}</td>
+                        <td>{{ i.make }}</td>
+                        <td>{{ i.model }}</td>
+                        <td>{{ i.builtYear }}</td>
+                        <td>{{ i.odometer }}</td>
+                        <td>{{ i.price }}</td>
+						<td>{{ i.isSold }}</td>
+                        <td>{{ i.sale_date }}</td>
+                        <td>{{ i.buyer }}</td>
+                        <td>{{ i.salesperson }}</td>
+                    </tr>
+                    {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<script type="text/javascript" defer="defer"> jQuery(document).ready(function($) {
+    $(".clickable-row").click(function() {
+        window.location = $(this).data("href");
+    });
+	$(".clickable-row").mouseover(function() {
+        $(this).css('background-color', '#eeeeee');
+        $(this).css('cursor', 'pointer');
+    });
+	$(".clickable-row").mouseout(function() {
+        $(this).css('background-color', 'white');
+    });
+
+});
+</script>
+
+{% include 'bottom.html' %}

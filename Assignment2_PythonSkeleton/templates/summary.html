@@ -1,0 +1,55 @@
+{% include 'top.html' %}
+
+<div class="content">
+    <div class="container">
+        <h1 class="title" align="center">Summary</h1>
+        <div class="search">
+            <!-- TODO -->
+            <form class="search-top" method="POST" action="{{url_for('list_carsales')}}"> 
+                <input type="text" name="search" placeholder="Search" autofocus>
+                <button class="flat" type="submit">Find</button>
+                <div class="clear"></div>
+            </form>
+        </div>
+        <table class="styled">
+            <thead>
+                <tr>
+				    <th>Make</th>
+                    <th>Model</th>
+                    <th>Available Units</th>
+                    <th>Sold Units</th>
+					<th>Total Sales $</th>
+                    <th>Last Purchased At</th>
+                </tr>
+            </thead>
+            <tbody>
+                    {% for i in summary %}
+                    <tr class='clickable-row' data-href="{{url_for('list_carsales', search=i.model)}}" method="GET">
+					    <td>{{ i.make }}</td>
+                        <td>{{ i.model }}</td>
+                        <td>{{ i.availableUnits }}</td>
+                        <td>{{ i.soldUnits }}</td>
+                        <td>{{ i.soldTotalPrices }}</td>
+						<td>{{ i.lastPurchaseAt }}</td>
+                    </tr>
+                    {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<script type="text/javascript" defer="defer"> jQuery(document).ready(function($) {
+    $(".clickable-row").click(function() {
+        window.location = $(this).data("href");
+    });
+	$(".clickable-row").mouseover(function() {
+        $(this).css('background-color', '#eeeeee');
+        $(this).css('cursor', 'pointer');
+    });
+	$(".clickable-row").mouseout(function() {
+        $(this).css('background-color', 'white');
+    });
+
+});
+</script>
+
+{% include 'bottom.html' %}
