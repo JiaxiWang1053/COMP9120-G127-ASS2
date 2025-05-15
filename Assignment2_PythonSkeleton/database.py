@@ -40,10 +40,10 @@ def checkLogin(login, password):
     cur = conn.cursor()
 
     try:
-        query = """
+        query = f"""
                 SELECT username, firstname, lastname
                 FROM Salesperson
-                WHERE LOWER(username) = LOWER(%s) 
+                WHERE LOWER(username) = LOWER(%s)
                 AND password = %s 
                 """
         cur.execute(query, (login, password))
@@ -249,10 +249,26 @@ def updateCarSale(carsaleid, customer, salesperosn, saledate):
     cur = conn.cursor()
 
     try:
-        # trans date format
+        # trans date format and check if date valid
         sale_date_obj = datetime.strptime(saledate, "%Y-%m-%d").date()
+        if sale_date_obj > date.today():
+            print(f"Sale date {sale_date_obj} is in the future. Must not be later than today.")
+            return False
+
         salesperosn=salesperosn.lower().strip()
         customer=customer.lower().strip()
+        # Check if cusotmor valid
+        cur.execute("SELECT 1 FROM Customer WHERE LOWER(CustomerID) = %s", (customer,))
+        if not cur.fetchone():
+            print(f"Customer ID '{customer}' not found.")
+            return False
+
+        # Check if salesperson valid
+        cur.execute("SELECT 1 FROM Salesperson WHERE LOWER(UserName) = %s", (salesperosn,))
+        if not cur.fetchone():
+            print(f"Salesperson username '{salesperosn}' not found.")
+            return False
+
         # renew carsales table
         query='''
                 UPDATE CarSales 
