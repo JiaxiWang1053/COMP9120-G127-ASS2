@@ -4,6 +4,7 @@ DROP TABLE IF EXISTS Model CASCADE;
 DROP TABLE IF EXISTS Salesperson CASCADE;
 DROP TABLE IF EXISTS Customer CASCADE;
 DROP TABLE IF EXISTS CarSales CASCADE;
+DROP FUNCTION get_car_sales_summary();
 
 CREATE TABLE Salesperson (
     UserName VARCHAR(10) PRIMARY KEY,
@@ -109,3 +110,44 @@ INSERT INTO CarSales (MakeCode, ModelCode, BuiltYear, Odometer, Price, IsSold, B
 ('MB', 'eclass', 2019, 99220, 105000.00, FALSE, NULL, NULL, NULL),
 ('VW', 'golf', 2023, 53849, 43000.00, FALSE, NULL, NULL, NULL),
 ('MB', 'cclass', 2022, 89200, 62000.00, FALSE, NULL, NULL, NULL);
+
+CREATE OR REPLACE FUNCTION check_login(user_input TEXT, pass_input TEXT)
+RETURNS TABLE (
+    username VARCHAR,
+    firstname VARCHAR,
+    lastname VARCHAR
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT sp.username, sp.firstname, sp.lastname
+    FROM Salesperson sp
+    WHERE LOWER(sp.username) = LOWER(user_input)
+      AND sp.password = pass_input;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION get_car_sales_summary()
+RETURNS TABLE (
+    make_name VARCHAR,
+    model_name VARCHAR,
+    available_units BIGINT,
+    sold_units BIGINT,
+    total_sales NUMERIC,
+    last_purchased_at DATE
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+        mk.MakeName,
+        mo.ModelName,
+        SUM(CASE WHEN cs.IsSold = FALSE THEN 1 ELSE 0 END),
+        SUM(CASE WHEN cs.IsSold = TRUE THEN 1 ELSE 0 END),
+        SUM(CASE WHEN cs.IsSold = TRUE THEN cs.Price ELSE 0 END),
+        MAX(CASE WHEN cs.IsSold = TRUE THEN cs.SaleDate ELSE NULL END)
+    FROM CarSales cs
+    JOIN Make mk ON cs.MakeCode = mk.MakeCode
+    JOIN Model mo ON cs.ModelCode = mo.ModelCode
+    GROUP BY mk.MakeName, mo.ModelName
+    ORDER BY mk.MakeName ASC, mo.ModelName ASC;
+END;
+$$ LANGUAGE plpgsql;

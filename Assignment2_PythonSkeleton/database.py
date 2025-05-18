@@ -40,12 +40,13 @@ def checkLogin(login, password):
     cur = conn.cursor()
 
     try:
-        query = f"""
-                SELECT username, firstname, lastname
-                FROM Salesperson
-                WHERE LOWER(username) = LOWER(%s)
-                AND password = %s 
-                """
+        # query = f"""
+        #         SELECT username, firstname, lastname
+        #         FROM Salesperson
+        #         WHERE LOWER(username) = LOWER(%s)
+        #         AND password = %s
+        #         """
+        query = "SELECT * FROM check_login(%s, %s);"
         cur.execute(query, (login, password))
         result = cur.fetchone()
 
@@ -75,21 +76,22 @@ def getCarSalesSummary():
     cur = conn.cursor()
 
     try:
-        query = """
-                SELECT
-                    mk.MakeName,
-                    mo.ModelName,
-                    SUM(CASE WHEN cs.IsSold = FALSE THEN 1 ELSE 0 END) AS AvailableUnits,
-                    SUM(CASE WHEN cs.IsSold = TRUE THEN 1 ELSE 0 END) AS SoldUnits,
-                    SUM(CASE WHEN cs.IsSold = TRUE THEN cs.Price ELSE 0 END) AS TotalSales,
-                    MAX(CASE WHEN cs.IsSold = TRUE THEN cs.SaleDate ELSE NULL END) AS LastPurchasedAt
-                FROM CarSales cs
-                JOIN Make mk ON cs.MakeCode = mk.MakeCode
-                JOIN Model mo ON cs.ModelCode = mo.ModelCode
-                GROUP BY mk.MakeName, mo.ModelName
-                ORDER BY mk.MakeName ASC, mo.ModelName ASC;
-                """
+        # query = """
+        #         SELECT
+        #             mk.MakeName,
+        #             mo.ModelName,
+        #             SUM(CASE WHEN cs.IsSold = FALSE THEN 1 ELSE 0 END) AS AvailableUnits,
+        #             SUM(CASE WHEN cs.IsSold = TRUE THEN 1 ELSE 0 END) AS SoldUnits,
+        #             SUM(CASE WHEN cs.IsSold = TRUE THEN cs.Price ELSE 0 END) AS TotalSales,
+        #             MAX(CASE WHEN cs.IsSold = TRUE THEN cs.SaleDate ELSE NULL END) AS LastPurchasedAt
+        #         FROM CarSales cs
+        #         JOIN Make mk ON cs.MakeCode = mk.MakeCode
+        #         JOIN Model mo ON cs.ModelCode = mo.ModelCode
+        #         GROUP BY mk.MakeName, mo.ModelName
+        #         ORDER BY mk.MakeName ASC, mo.ModelName ASC;
+        #         """
 
+        query="SELECT * FROM get_car_sales_summary();"
         cur.execute(query)
         result = cur.fetchall()
 
