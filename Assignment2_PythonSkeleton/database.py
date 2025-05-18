@@ -156,7 +156,9 @@ def findCarSales(searchString):
                 AND (cs.IsSold = FALSE OR
                     cs.SaleDate >= CURRENT_DATE - INTERVAL '3 years')
                 ORDER BY cs.IsSold ASC,
-                    cs.SaleDate DESC NULLS LAST
+                    cs.SaleDate ASC NULLS LAST,
+                    mk.MakeName ASC,
+                    mo.ModelName ASC
                     
                 """
 
