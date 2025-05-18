@@ -146,12 +146,15 @@ def findCarSales(searchString):
                 JOIN Model mo ON cs.ModelCode = mo.ModelCode
                 LEFT JOIN Customer cu ON cs.BuyerID = cu.CustomerID
                 LEFT JOIN Salesperson sp ON cs.SalespersonID = sp.UserName
-                WHERE 
-                    LOWER(mk.MakeName) LIKE %s OR
+                WHERE (LOWER(mk.MakeName) LIKE %s OR
                     LOWER(mo.ModelName) LIKE %s OR
                     LOWER(CONCAT(cu.FirstName, ' ', cu.LastName)) LIKE %s OR
                     LOWER(CONCAT(sp.FirstName, ' ', sp.LastName)) LIKE %s 
-                ORDER BY cs.SaleDate DESC NULLS LAST
+                         ) 
+                AND (cs.IsSold = FALSE OR
+                    cs.SaleDate >= CURRENT_DATE - INTERVAL '3 years')
+                ORDER BY cs.IsSold ASC,
+                    cs.SaleDate DESC NULLS LAST
                     
                 """
 
@@ -249,11 +252,8 @@ def updateCarSale(carsaleid, customer, salesperosn, saledate):
     cur = conn.cursor()
 
     try:
-        # trans date format and check if date valid
+        # trans date format
         sale_date_obj = datetime.strptime(saledate, "%Y-%m-%d").date()
-        if sale_date_obj > date.today():
-            print(f"Sale date {sale_date_obj} is in the future. Must not be later than today.")
-            return False
 
         salesperosn=salesperosn.lower().strip()
         customer=customer.lower().strip()
@@ -277,8 +277,14 @@ def updateCarSale(carsaleid, customer, salesperosn, saledate):
                     SaleDate = %s,
                     IsSold = %s
                 WHERE CarSaleID = %s
+                AND %s <= CURRENT_DATE
         '''
-        cur.execute(query, (customer, salesperosn, sale_date_obj,True, carsaleid))
+        cur.execute(query, (customer, salesperosn, sale_date_obj,True, carsaleid, sale_date_obj))
+
+        #check if update sucessful
+        if cur.rowcount == 0:
+            print(f"Update failed: Sale date {sale_date_obj} is invalid (future) or CarSaleID not found.")
+            return False
 
         conn.commit()
         return True
